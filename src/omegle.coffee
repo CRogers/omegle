@@ -18,12 +18,10 @@ getAllData = (res, callback) ->
 	res.on 'data', (chunk) -> buffer.push chunk
 	res.on 'end', -> callback buffer.join ''
 
-class Omegle
-	constructor: ->
-		EventEmitter.call(this)
-		
-	sys.inherits(Omegle, EventEmitter)
-		
+
+
+
+class Omegle extends EventEmitter		
 	start: (err) ->
 		request 'GET', '/start', (res) ->
 			if res.statusCode isnt 200
@@ -34,7 +32,7 @@ class Omegle
 			getAllData res, (data) ->
 				console.log "Got new id: " + data
 				@id = data
-				Omegle::emit 'connected', data
+				@emit 'connected', data
 		
 	say: (msg, err) ->
 		console.log 'saying ' + msg
@@ -42,6 +40,6 @@ class Omegle
 			 console.log res.statusCode
 		
 	disconnect: ->
-		Omegle::emit 'disconnect'
+		@emit 'disconnect'
 
 exports.Omegle = Omegle
