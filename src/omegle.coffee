@@ -23,16 +23,16 @@ getAllData = (res, callback) ->
 
 class Omegle extends EventEmitter		
 	start: (err) ->
-		request 'GET', '/start', (res) ->
+		request 'GET', '/start', (res) =>
 			if res.statusCode isnt 200
 				if err
 					err res.statusCode
 				return
 			
-			getAllData res, (data) ->
+			getAllData res, (data) =>
 				console.log "Got new id: " + data
 				@id = data
-				@emit 'connected', data
+				@emit 'start', data
 		
 	say: (msg, err) ->
 		console.log 'saying ' + msg
