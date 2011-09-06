@@ -1,0 +1,9 @@
+{
+    "name": "omegle",
+    "description": "A library to connect with and chat to people on omegle",
+    "keywords": ["omegle", "chat"],
+    "homepage": "https://github.com/CRogers/omegle",
+    "main" : "./lib/omegle",
+    "author": "Callum Rogers <callumrogers@hotmail.co.uk>",
+    "version": "0.0.1"
+}
