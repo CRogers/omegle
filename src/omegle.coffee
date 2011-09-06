@@ -1,4 +1,5 @@
 EventEmitter = require('events').EventEmitter
+sys = require('sys')
 http = require('http')
 
 request = (method, path, callback) ->
@@ -17,25 +18,30 @@ getAllData = (res, callback) ->
 	res.on 'data', (chunk) -> buffer.push chunk
 	res.on 'end', -> callback buffer.join ''
 
-
 class Omegle
 	constructor: ->
-		EventEmitter.call this
-		Omegle:: = Object.create EventEmitter::
-
-	connect: (err) ->
+		EventEmitter.call(this)
+		
+	sys.inherits(Omegle, EventEmitter)
+		
+	start: (err) ->
 		request 'GET', '/start', (res) ->
 			if res.statusCode isnt 200
-				err res.statusCode
+				if err
+					err res.statusCode
 				return
 			
 			getAllData res, (data) ->
-				console.log data
-				@emit 'connected'
+				console.log "Got new id: " + data
+				@id = data
+				Omegle::emit 'connected', data
 		
-	say: (text) ->
+	say: (msg, err) ->
+		console.log 'saying ' + msg
+		request 'POST', "/send?id=#{id}&msg=#{msg}", (res) ->
+			 console.log res.statusCode
 		
 	disconnect: ->
-		@emit('disconnected')
+		Omegle::emit 'disconnect'
 
 exports.Omegle = Omegle
