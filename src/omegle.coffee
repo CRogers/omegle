@@ -1,5 +1,4 @@
 EventEmitter = require('events').EventEmitter
-sys = require('sys')
 http = require('http')
 fs = require('fs')
 
@@ -14,8 +13,22 @@ class Omegle extends EventEmitter
 	constructor: (userAgent, host) ->
 		@userAgent = userAgent || "omegle node.js npm package/#{version}"
 		@host = host || 'bajor.omegle.com'
+		
+		@on 'strangerDisconnected', -> @id = undefined
 	
-	request: (method, path, data, callback) ->
+	requestGet: (path, callback) ->
+		@requestFull 'GET', path, undefined, undefined, callback
+	
+	requestPost: (path, data, callback) ->
+		@requestFull 'POST', path, data, undefined, callback
+	
+	requestKA: (path, data, callback) ->
+		@requestFull 'POST', path, data, true, callback
+	
+	requestFull: (method, path, data, keepAlive, callback) ->
+		data = formFormat data if data
+		console.log data
+	
 		options = 
 			method:	method
 			host:	@host
@@ -23,15 +36,19 @@ class Omegle extends EventEmitter
 			path:	path
 			headers:
 				'User-Agent': @userAgent
-				'Content-Type': 'application/x-www-form-urlencoded'
-				'Content-Length': data?.length ? 0
-	
-		console.log 'Sending request:'
-		console.log options
-	
-		req = http.request options, callback
+		
 		if data
-			req.write data
+			options.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+			options.headers['Content-Length'] = data.length
+		
+		if keepAlive
+			options.headers['Connection'] = 'Keep-Alive'
+
+		console.log "Sending request: #{path}"
+		#console.log options
+
+		req = http.request options, callback
+		req.write data if data
 		req.end()
 
 
@@ -40,26 +57,63 @@ class Omegle extends EventEmitter
 		res.on 'data', (chunk) -> buffer.push chunk
 		res.on 'end', -> callback buffer.join ''
 	
-	start: (err) ->
-		@request 'GET', '/start', undefined, (res) =>
+	callbackErr = (callback, res) ->
+		callback? (if res.statusCode isnt 200 then res.statusCode)
+	
+	formFormat = (data) ->
+		("#{k}=#{v}" for k,v of data).join '&'
+	
+	start: (callback) ->
+		@requestGet '/start', (res) =>
 			if res.statusCode isnt 200
-				if err
-					err res.statusCode
+				callback? res.statusCode
 				return
 			
 			getAllData res, (data) =>
 				# strip quotes
 				@id = data[1...data.length-1]
 				console.log "Got new id: " + @id
-				@emit 'start', @id
+				callback()
+				@emit 'newid', @id
+				@eventsLoop()
 		
-	send: (msg, err) ->
+	send: (msg, callback) ->
 		console.log 'saying ' + msg
-		@request 'POST', "/send", "msg=#{msg}&id=#{@id}", (res) ->
-			getAllData res, (data) -> console.log data
-			res.statusCode is 200 ? err() : err res.statusCode				
+		@requestPost '/send', {msg: msg, id: @id}, (res) ->
+			callbackErr callback, res
+	
+	postEvent: (event, callback) ->
+		@requestPost "/#{event}", {id: @id}, (res) ->
+			console.log event
+			callbackErr callback, res	
+	
+	startTyping: (callback) -> 
+		@postEvent 'typing', callBack
+			
+	stopTyping: (callback) ->
+		@postEvent 'stopTyping', callback	
 		
-	disconnect: ->
-		@emit 'disconnect'
+	disconnect: (callback) ->
+		@postEvent 'disconnect', callback
+		@id = undefined
+		
+	
+	
+	eventsLoop: ->	
+		@requestKA '/events', {id: @id}, (res) =>
+			if res.statusCode is 200			
+				getAllData res, (eventData) =>
+					@eventReceived eventData
+	
+	eventReceived: (data) ->		
+		data = JSON.parse data
+		if data?
+			for event in data
+				console.log event
+				@emit.apply this, event
+		
+		@eventsLoop() if @id
+		
+		
 
 exports.Omegle = Omegle
