@@ -81,7 +81,7 @@ class Omegle extends EventEmitter
 			callbackErr callback, res	
 	
 	startTyping: (callback) -> 
-		@postEvent 'typing', callBack
+		@postEvent 'typing', callback
 			
 	stopTyping: (callback) ->
 		@postEvent 'stopTyping', callback	
