@@ -12,6 +12,8 @@ omg.start(function(err) {
 });
 startconv = function() {
   return omg.send('hi', function(err) {
-    return console.log("Error " + err);
+    if (err) {
+      return console.log("Error " + err);
+    }
   });
 };

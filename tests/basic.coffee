@@ -11,4 +11,6 @@ omg.start (err) ->
 		console.log "Error #{err}"
 
 startconv = ->
-	omg.send 'hi', (err) -> console.log "Error #{err}"
+	omg.send 'hi', (err) -> 
+		if err
+			console.log "Error #{err}"

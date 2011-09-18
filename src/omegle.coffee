@@ -23,6 +23,7 @@ class Omegle extends EventEmitter
 			path:	path
 			headers:
 				'User-Agent': @userAgent
+				'Content-Type': 'application/x-www-form-urlencoded'
 				'Content-Length': data?.length ? 0
 	
 		console.log 'Sending request:'
@@ -47,6 +48,7 @@ class Omegle extends EventEmitter
 				return
 			
 			getAllData res, (data) =>
+				# strip quotes
 				@id = data[1...data.length-1]
 				console.log "Got new id: " + @id
 				@emit 'start', @id
@@ -55,10 +57,7 @@ class Omegle extends EventEmitter
 		console.log 'saying ' + msg
 		@request 'POST', "/send", "msg=#{msg}&id=#{@id}", (res) ->
 			getAllData res, (data) -> console.log data
-			if res.statusCode isnt 200
-				err res.statusCode
-			else
-				err()
+			res.statusCode is 200 ? err() : err res.statusCode				
 		
 	disconnect: ->
 		@emit 'disconnect'
