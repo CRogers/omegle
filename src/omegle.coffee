@@ -4,7 +4,7 @@ fs = require('fs')
 
 # Get version from package file
 version = 'Unknown'
-package = fs.readFileSync '../package.json', 'utf8'
+package = fs.readFileSync "#{__dirname}/../package.json", 'utf8'
 if package
 	version = JSON.parse(package).version
 
