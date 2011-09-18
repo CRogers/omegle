@@ -4,7 +4,13 @@ Omegle for node
 Quickstart
 ---
 
+Take a look in the `tests/` folder for more bulked out (and useful) examples.
+
+Installion:
+
     npm install omegle
+
+Script:
 
 ```javascript
 Omegle = require('omegle').Omegle;
