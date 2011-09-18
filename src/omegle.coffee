@@ -27,7 +27,6 @@ class Omegle extends EventEmitter
 	
 	requestFull: (method, path, data, keepAlive, callback) ->
 		data = formFormat data if data
-		console.log data
 	
 		options = 
 			method:	method
@@ -43,9 +42,6 @@ class Omegle extends EventEmitter
 		
 		if keepAlive
 			options.headers['Connection'] = 'Keep-Alive'
-
-		console.log "Sending request: #{path}"
-		#console.log options
 
 		req = http.request options, callback
 		req.write data if data
@@ -72,19 +68,16 @@ class Omegle extends EventEmitter
 			getAllData res, (data) =>
 				# strip quotes
 				@id = data[1...data.length-1]
-				console.log "Got new id: " + @id
 				callback()
 				@emit 'newid', @id
 				@eventsLoop()
 		
 	send: (msg, callback) ->
-		console.log 'saying ' + msg
 		@requestPost '/send', {msg: msg, id: @id}, (res) ->
 			callbackErr callback, res
 	
 	postEvent: (event, callback) ->
 		@requestPost "/#{event}", {id: @id}, (res) ->
-			console.log event
 			callbackErr callback, res	
 	
 	startTyping: (callback) -> 
@@ -109,7 +102,6 @@ class Omegle extends EventEmitter
 		data = JSON.parse data
 		if data?
 			for event in data
-				console.log event
 				@emit.apply this, event
 		
 		@eventsLoop() if @id
