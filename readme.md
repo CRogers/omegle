@@ -7,7 +7,7 @@ Quickstart
     npm install omegle
 
 ```javascript
-Omegle = require('../lib/omegle').Omegle;
+Omegle = require('omegle').Omegle;
 
 var om = new Omegle();
 
