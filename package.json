@@ -5,5 +5,5 @@
     "homepage": "https://github.com/CRogers/omegle",
     "main" : "./lib/omegle",
     "author": "Callum Rogers <callumrogers@hotmail.co.uk>",
-    "version": "0.0.1"
+    "version": "0.1"
 }
