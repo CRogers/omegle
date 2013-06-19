@@ -15,6 +15,9 @@ Script:
 ```javascript
 Omegle = require('omegle').Omegle;
 
+// This creates the instance.
+// By default it searchs for English speaking strangers,
+// see "Further Asides" for changing the language
 var om = new Omegle();
 
 // This starts a new conversation
@@ -67,11 +70,13 @@ Sadly, omegle has captchas. The `recaptchaRequired` event can be used to solve t
 Further Asides
 ---
 
-You can change the user agent string and host to connect to by using the constructor or by accessing the object:
+You can change the language you want to speak (by default English), user agent string, host to connect to and whetever you are mobile or not by using the constructor or by accessing the object:
 
 ```javascript
-var om = new Omegle('user agent string', 'host');
+var om = new Omegle('user agent string', 'host', 'two-letter language code', 'mobile true/false');
 
 om.userAgent = 'blah';
 om.host = 'foo.omegle.com';
+om.language = 'fr';
+om.mobile = true;
 ```

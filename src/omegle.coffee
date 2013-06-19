@@ -1,19 +1,17 @@
 EventEmitter = require('events').EventEmitter
 http = require('http')
 fs = require('fs')
+qs = require('qs');
 
 # Get version from package file
 version = 'Unknown'
-package = fs.readFileSync "#{__dirname}/../package.json", 'utf8'
-if package
-	version = JSON.parse(package).version
+npmPackage = fs.readFileSync "#{__dirname}/../package.json", 'utf8'
+if npmPackage
+	version = JSON.parse(npmPackage).version
 
 class Omegle extends EventEmitter
 
-	constructor: (userAgent, host) ->
-		@userAgent = userAgent || "omegle node.js npm package/#{version}"
-		@host = host || 'bajor.omegle.com'
-		
+	constructor: (userAgent="omegle node.js npm package/#{version}", host='bajor.omegle.com',language='en',mobile=false) ->
 		@on 'strangerDisconnected', -> @id = undefined
 	
 	requestGet: (path, callback) ->
@@ -58,9 +56,15 @@ class Omegle extends EventEmitter
 	
 	formFormat = (data) ->
 		("#{k}=#{v}" for k,v of data).join '&'
+
+	mobileValue = (mobileParam=@mobile) ->
+		if mobileParam is true or mobileParam is 1
+			return 1
+		else
+			return 0
 	
 	start: (callback) ->
-		@requestGet '/start', (res) =>
+		@requestGet '/start?' + qs.stringify({ rcs: 1, firstevents: 1, m: mobileValue(@mobile), lang: @language }), (res) =>
 			if res.statusCode isnt 200
 				callback? res.statusCode
 				return

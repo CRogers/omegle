@@ -3,7 +3,24 @@
     "description": "A library to connect with and chat to people on omegle",
     "keywords": ["omegle", "chat"],
     "homepage": "https://github.com/CRogers/omegle",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/CRogers/omegle"
+    },
     "main" : "./lib/omegle",
     "author": "Callum Rogers <callumrogers@hotmail.co.uk>",
+    "contributors": [
+      {
+        "name": "Callum Rogers",
+        "email": "callumrogers@hotmail.co.uk"
+      },
+      {
+        "name": "Jani Luukko",
+        "email": "jj.luukko@gmail.com"
+      }
+    ],
+    "dependencies": {
+      "qs": "*"
+    },
     "version": "0.1"
 }
