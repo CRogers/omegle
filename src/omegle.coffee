@@ -1,17 +1,19 @@
 EventEmitter = require('events').EventEmitter
 http = require('http')
 fs = require('fs')
-qs = require('qs');
 
 # Get version from package file
 version = 'Unknown'
-npmPackage = fs.readFileSync "#{__dirname}/../package.json", 'utf8'
-if npmPackage
-	version = JSON.parse(npmPackage).version
+package = fs.readFileSync "#{__dirname}/../package.json", 'utf8'
+if package
+	version = JSON.parse(package).version
 
 class Omegle extends EventEmitter
 
-	constructor: (userAgent="omegle node.js npm package/#{version}", host='bajor.omegle.com',language='en',mobile=false) ->
+	constructor: (userAgent, host) ->
+		@userAgent = userAgent || "omegle node.js npm package/#{version}"
+		@host = host || 'bajor.omegle.com'
+		
 		@on 'strangerDisconnected', -> @id = undefined
 	
 	requestGet: (path, callback) ->
@@ -56,15 +58,9 @@ class Omegle extends EventEmitter
 	
 	formFormat = (data) ->
 		("#{k}=#{v}" for k,v of data).join '&'
-
-	mobileValue = (mobileParam=@mobile) ->
-		if mobileParam is true or mobileParam is 1
-			return 1
-		else
-			return 0
 	
 	start: (callback) ->
-		@requestGet '/start?' + qs.stringify({ rcs: 1, firstevents: 1, m: mobileValue(@mobile), lang: @language }), (res) =>
+		@requestGet '/start', (res) =>
 			if res.statusCode isnt 200
 				callback? res.statusCode
 				return
@@ -76,6 +72,12 @@ class Omegle extends EventEmitter
 				@emit 'newid', @id
 				@eventsLoop()
 		
+		
+	getStats: (callback) ->
+		@requestGet '/status?nocache=' + Math.random(), (res) ->
+			getAllData res, __bind_((data) ->
+				callback JSON.parse(data)
+    
 	send: (msg, callback) ->
 		@requestPost '/send', {msg: msg, id: @id}, (res) ->
 			callbackErr callback, res
