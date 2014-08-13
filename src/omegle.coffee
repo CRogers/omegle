@@ -76,7 +76,7 @@ class Omegle extends EventEmitter
 				@emit 'newid', @id
 				@eventsLoop()
 				
-	getStats: (callback) ->
+	getStatus: (callback) ->
 		@requestGet '/status?nocache=' + Math.random(), (res) ->
 		getAllData res, __bind_((data) ->
 		callback JSON.parse(data)
