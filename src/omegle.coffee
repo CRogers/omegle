@@ -11,7 +11,7 @@ if npmPackage
 
 class Omegle extends EventEmitter
 
-	constructor: (userAgent="omegle node.js npm package/#{version}", host='bajor.omegle.com',language='en',mobile=false) ->
+	constructor: (userAgent="omegle node.js npm package/#{version}", host='front1.omegle.com',language='en',mobile=false) ->
 		@on 'strangerDisconnected', -> @id = undefined
 	
 	requestGet: (path, callback) ->
