@@ -63,7 +63,7 @@ These events are emitted, some with arguments:
     antinudeBanned
     error
 
-Untrue to its name, `antinudeBanned` does not necessarily mean you where banned for nudity. You will also get this response if your IP is banned because you used omegle too advertise or if you made connections to rapidly.
+Untrue to its name, `antinudeBanned` does not necessarily mean you where banned for nudity. You will also get this response if your IP is banned because you used omegle to advertise or if you made connections too rapidly.
 
 Captcha
 ---
